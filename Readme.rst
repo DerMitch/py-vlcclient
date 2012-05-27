@@ -31,8 +31,8 @@ For example::
   >>> r.rewind()
   >>> r.status()
   '( new input: file:///.... )
-( audio volume: 200 )
-( state playing )'
+   ( audio volume: 200 )
+   ( state playing )'
 
 
 Implemented Commands
