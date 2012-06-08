@@ -33,12 +33,20 @@ class VLCClient(object):
         self.password = password
 
         self.telnet = None
+        self.server_version = None
 
     def connect(self):
         """Connect to VLC and login"""
         assert self.telnet is None, "connect() called twice"
         self.telnet = telnetlib.Telnet()
         self.telnet.open(self.server, self.port)
+
+        # Parse version
+        result = self.telnet.expect([
+            "VLC media player ([\d.]+)",
+        ])
+        self.server_version = result[1].group(1)
+        self.server_version_tuple = self.server_version.split('.')
 
         # Login
         self.telnet.read_until("Password: ")
@@ -64,6 +72,14 @@ class VLCClient(object):
         self.telnet.write(line + "\n")
         return self.telnet.read_until(">")[1:-3]
 
+    def _require_version(self, command, version):
+        if isinstance(version, basestring):
+            version = version.split('.')
+        if version > self.server_version_tuple:
+            raise OldServerVersion("Command '{0} requires at least VLC {1}".format(
+                command, ".".join(version)
+            ))
+
     #
     # Commands
     #
@@ -73,6 +89,7 @@ class VLCClient(object):
 
     def status(self):
         """current playlist status"""
+        self._require_version("status", "2.0.0")
         return self.send_command("status")
 
     def info(self):
@@ -144,9 +161,13 @@ class VLCClient(object):
 class WrongPasswordError(Exception):
     pass
 
+class OldServerVersion(Exception):
+    pass
+
 def main():
-    vlc = VLCClient("::1")
+    vlc = VLCClient("ubuntu.local")
     vlc.connect()
+    print "Connected to VLC {0}".format(vlc.server_version)
 
     try:
         command = getattr(vlc, sys.argv[1])
@@ -154,11 +175,13 @@ def main():
         print "usage: vlcclient.py command [argument]"
         sys.exit(1)
 
-    attr = sys.argv[2] if len(sys.argv) > 2 else None
     try:
-        print command(attr)
-    except TypeError:
-        print command()
-
+        attr = sys.argv[2] if len(sys.argv) > 2 else None
+        try:
+            print command(attr)
+        except TypeError:
+            print command()
+    except OldServerVersion as e:
+        print "Error:", e
 if __name__ == '__main__':
     main()
