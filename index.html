@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Py-vlcclient : A VLC client written in python" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Py-vlcclient</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/DerMitch/py-vlcclient">View on GitHub</a>
+
+          <h1 id="project_title">Py-vlcclient</h1>
+          <h2 id="project_tagline">A VLC client written in python</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/DerMitch/py-vlcclient/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/DerMitch/py-vlcclient/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>py-vlcclient</h1>
+
+<p>This module allows to control a VLC instance using Python. This
+module uses the telnet interface of VLC and has no external dependencies.</p>
+
+<p>More information about the telnet interface:
+<a href="http://wiki.videolan.org/Documentation:Streaming_HowTo/VLM">http://wiki.videolan.org/Documentation:Streaming_HowTo/VLM</a></p>
+
+<p>The clients supports some basic commands to modify playlists and control the playback.</p>
+
+<h1>How to Use</h1>
+
+<p>First start VLC and enable the telnet interface. You can either enable
+it when starting VLC::</p>
+
+<p>$ vlc --intf telnet</p>
+
+<p>or via the menus (depending on your platform, mostly View -&gt;
+Add Interface -&gt; Telnet).</p>
+
+<p>For example:</p>
+
+<pre><code>  &gt;&gt;&gt; from vlcclient import VLCClient
+  &gt;&gt;&gt; vlc = VLCClient("::1")
+  &gt;&gt;&gt; vlc.connect()
+  &gt;&gt;&gt;
+  &gt;&gt;&gt; r.add("/home/mitch/Music/a_song.ogg")
+  &gt;&gt;&gt; r.volume(300)
+  &gt;&gt;&gt; r.rewind()
+  &gt;&gt;&gt; r.status()
+  '( new input: file:///.... )
+   ( audio volume: 200 )
+   ( state playing )'
+</code></pre>
+
+<h1>Implemented Commands</h1>
+
+<p>The following commands are currently implemented:</p>
+
+<h2>generic</h2>
+
+<ul>
+<li>help</li>
+<li>status</li>
+<li>info</li>
+</ul><h2>playlists and controls</h2>
+
+<ul>
+<li>add</li>
+<li>enqueue</li>
+<li>seek</li>
+<li>play</li>
+<li>pause</li>
+<li>stop</li>
+<li>rewind</li>
+<li>next</li>
+<li>prev</li>
+<li>clear</li>
+</ul><h2>volume</h2>
+
+<ul>
+<li>volume (get/set)</li>
+<li>volup</li>
+<li>voldown</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Py-vlcclient maintained by <a href="https://github.com/DerMitch">DerMitch</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
