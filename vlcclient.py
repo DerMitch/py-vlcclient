@@ -3,15 +3,17 @@
     VLCClient
     ~~~~~~~~~
 
-    This module allows to control a VLC instance to be controlled
-    via telnet. You need to enable the telnet interface, e.g. start
+    This module allows to control a VLC instance through a python interface.
+    
+    You need to enable the telnet interface, e.g. start
     VLC like this:
 
     $ vlc --intf telnet
 
-
     To start VLC with allowed remote admin:
     $ vlc --intf telnet --lua-config "telnet={host='0.0.0.0:4212'}"
+    
+    Replace --intf with --extraintf to start telnet and the regular GUI
 
     More information about the telnet interface:
     http://wiki.videolan.org/Documentation:Streaming_HowTo/VLM
@@ -71,7 +73,7 @@ class VLCClient(object):
         self.telnet.close()
         self.telnet = None
 
-    def send_command(self, line):
+    def _send_command(self, line):
         """Sends a command to VLC and returns the text reply.
         This command may block."""
         self.telnet.write(line + "\n")
@@ -90,16 +92,16 @@ class VLCClient(object):
     #
     def help(self):
         """Returns the full command reference"""
-        return self.send_command("help")
+        return self._send_command("help")
 
     def status(self):
         """current playlist status"""
         self._require_version("status", "2.0.0")
-        return self.send_command("status")
+        return self._send_command("status")
 
     def info(self):
         """information about the current stream"""
-        return self.send_command("info")
+        return self._send_command("info")
 
     #
     # Playlist
@@ -107,43 +109,43 @@ class VLCClient(object):
     def add(self, filename):
         """Add a file to the playlist and play it.
         This command always succeeds."""
-        return self.send_command("add {0}".format(filename))
+        return self._send_command("add {0}".format(filename))
 
     def enqueue(self, filename):
         """Add a file to the playlist. This command always succeeds."""
-        return self.send_command("enqueue {0}".format(filename))
+        return self._send_command("enqueue {0}".format(filename))
 
     def seek(self, second):
         """Jump to a position at the current stream if supported."""
-        return self.send_command("seek {0}".format(second))
+        return self._send_command("seek {0}".format(second))
 
     def play(self):
         """Start/Continue the current stream"""
-        return self.send_command("play")
+        return self._send_command("play")
 
     def pause(self):
         """Pause playing"""
-        return self.send_command("pause")
+        return self._send_command("pause")
 
     def stop(self):
         """Stop stream"""
-        return self.send_command("stop")
+        return self._send_command("stop")
 
     def rewind(self):
         """Rewind stream"""
-        return self.send_command("rewind")
+        return self._send_command("rewind")
 
     def next(self):
         """Play next item in playlist"""
-        return self.send_command("next")
+        return self._send_command("next")
 
     def prev(self):
         """Play previous item in playlist"""
-        return self.send_command("prev")
+        return self._send_command("prev")
 
     def clear(self):
         """Clear all items in playlist"""
-        return self.send_command("clear")
+        return self._send_command("clear")
 
     #
     # Volume
@@ -151,17 +153,17 @@ class VLCClient(object):
     def volume(self, vol=None):
         """Get the current volume or set it"""
         if vol:
-            return self.send_command("volume {0}".format(vol))
+            return self._send_command("volume {0}".format(vol))
         else:
-            return self.send_command("volume").strip()
+            return self._send_command("volume").strip()
 
     def volup(self, steps=1):
         """Increase the volume"""
-        return self.send_command("volup {0}".format(steps))
+        return self._send_command("volup {0}".format(steps))
 
     def voldown(self, steps=1):
         """Decrease the volume"""
-        return self.send_command("voldown {0}".format(steps))
+        return self._send_command("voldown {0}".format(steps))
 
 class WrongPasswordError(Exception):
     pass
@@ -196,5 +198,6 @@ def main():
             print command()
     except OldServerVersion as e:
         print "Error:", e
+
 if __name__ == '__main__':
     main()

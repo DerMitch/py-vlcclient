@@ -17,10 +17,14 @@ it when starting VLC::
 
    $ vlc --intf telnet
 
+or with network access:
+
+    $ vlc --intf telnet --lua-config "telnet={host='0.0.0.0:4212'}"
+
 or via the menus (depending on your platform, mostly View ->
 Add Interface -> Telnet).
 
-For example::
+Example usage::
 
   >>> from vlcclient import VLCClient
   >>> vlc = VLCClient("::1")
