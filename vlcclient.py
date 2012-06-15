@@ -9,6 +9,10 @@
 
     $ vlc --intf telnet
 
+
+    To start VLC with allowed remote admin:
+    $ vlc --intf telnet --lua-config "telnet={host='0.0.0.0:4212'}"
+
     More information about the telnet interface:
     http://wiki.videolan.org/Documentation:Streaming_HowTo/VLM
 
