@@ -31,10 +31,11 @@ import telnetlib
 
 class VLCClient(object):
     """Connection to a running VLC instance."""
-    def __init__(self, server, port=4212, password="admin"):
+    def __init__(self, server, port=4212, password="admin", timeout=5):
         self.server = server
         self.port = port
         self.password = password
+        self.timeout = timeout
 
         self.telnet = None
         self.server_version = None
@@ -43,7 +44,7 @@ class VLCClient(object):
         """Connect to VLC and login"""
         assert self.telnet is None, "connect() called twice"
         self.telnet = telnetlib.Telnet()
-        self.telnet.open(self.server, self.port)
+        self.telnet.open(self.server, self.port, self.timeout)
 
         # Parse version
         result = self.telnet.expect([
