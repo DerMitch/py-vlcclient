@@ -169,17 +169,25 @@ class OldServerVersion(Exception):
     pass
 
 def main():
-    vlc = VLCClient("ubuntu.local")
+    """Run any commands via CLI interface"""
+    try:
+        server = sys.argv[1]
+        if ':' in server:
+            server, port = server.split(':')
+        else:
+            port = 4212
+
+        command_name = sys.argv[2]
+    except IndexError:
+        print "usage: vlcclient.py server[:port] command [argument]"
+        sys.exit(1)
+
+    vlc = VLCClient(server, int(port))
     vlc.connect()
     print "Connected to VLC {0}".format(vlc.server_version)
 
     try:
-        command = getattr(vlc, sys.argv[1])
-    except IndexError:
-        print "usage: vlcclient.py command [argument]"
-        sys.exit(1)
-
-    try:
+        command = getattr(vlc, command_name)
         attr = sys.argv[2] if len(sys.argv) > 2 else None
         try:
             print command(attr)
