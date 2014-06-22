@@ -15,11 +15,11 @@ How to Use
 First start VLC and enable the telnet interface. You can either enable
 it when starting VLC::
 
-   $ vlc --intf telnet --telnet-password vlc
+   $ vlc --intf telnet --telnet-password admin
 
 or with network access:
 
-    $ vlc --intf telnet --telnet-password vlc --lua-config "telnet={host='0.0.0.0:4212'}"
+    $ vlc --intf telnet --telnet-password admin --lua-config "telnet={host='0.0.0.0:4212'}"
 
 or via the menus (depending on your platform, mostly View ->
 Add Interface -> Telnet).
