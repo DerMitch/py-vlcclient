@@ -4,36 +4,40 @@
     ~~~~~~~~~
 
     This module allows to control a VLC instance through a python interface.
-    
+
     You need to enable the telnet interface, e.g. start
     VLC like this:
 
-    $ vlc --intf telnet
+    $ vlc --intf telnet --telnet-password admin
 
     To start VLC with allowed remote admin:
-    $ vlc --intf telnet --lua-config "telnet={host='0.0.0.0:4212'}"
-    
+    $ vlc --intf telnet --telnet-password admin --lua-config "telnet={host='0.0.0.0:4212'}"
+
     Replace --intf with --extraintf to start telnet and the regular GUI
 
     More information about the telnet interface:
     http://wiki.videolan.org/Documentation:Streaming_HowTo/VLM
 
-    :author: Michael Mayr <michael@michfrm.net>
+    :author: Michael Mayr <michael@dermitch.de>
     :licence: MIT License
-    :version: 0.1.0
+    :version: 0.2.0
 """
 
-"""
-ToDo:
-- Connection error handling
-"""
+from __future__ import print_function
 
 import sys
+import inspect
 import telnetlib
 
+DEFAULT_PORT = 4212
+
+
 class VLCClient(object):
-    """Connection to a running VLC instance."""
-    def __init__(self, server, port=4212, password="admin", timeout=5):
+    """
+    Connection to a running VLC instance with telnet interface.
+    """
+
+    def __init__(self, server, port=DEFAULT_PORT, password="admin", timeout=5):
         self.server = server
         self.port = port
         self.password = password
@@ -43,8 +47,11 @@ class VLCClient(object):
         self.server_version = None
 
     def connect(self):
-        """Connect to VLC and login"""
+        """
+        Connect to VLC and login
+        """
         assert self.telnet is None, "connect() called twice"
+
         self.telnet = telnetlib.Telnet()
         self.telnet.open(self.server, self.port, self.timeout)
 
@@ -69,13 +76,17 @@ class VLCClient(object):
             raise WrongPasswordError()
 
     def disconnect(self):
-        """Disconnect and close connection"""
+        """
+        Disconnect and close connection
+        """
         self.telnet.close()
         self.telnet = None
 
     def _send_command(self, line):
-        """Sends a command to VLC and returns the text reply.
-        This command may block."""
+        """
+        Sends a command to VLC and returns the text reply.
+        This command may block.
+        """
         self.telnet.write(line + "\n")
         return self.telnet.read_until(">")[1:-3]
 
@@ -107,16 +118,22 @@ class VLCClient(object):
     # Playlist
     #
     def add(self, filename):
-        """Add a file to the playlist and play it.
-        This command always succeeds."""
-        return self._send_command("add {0}".format(filename))
+        """
+        Add a file to the playlist and play it.
+        This command always succeeds.
+        """
+        return self._send_command('add {0}'.format(filename))
 
     def enqueue(self, filename):
-        """Add a file to the playlist. This command always succeeds."""
+        """
+        Add a file to the playlist. This command always succeeds.
+        """
         return self._send_command("enqueue {0}".format(filename))
 
     def seek(self, second):
-        """Jump to a position at the current stream if supported."""
+        """
+        Jump to a position at the current stream if supported.
+        """
         return self._send_command("seek {0}".format(second))
 
     def play(self):
@@ -165,39 +182,51 @@ class VLCClient(object):
         """Decrease the volume"""
         return self._send_command("voldown {0}".format(steps))
 
+
 class WrongPasswordError(Exception):
     pass
+
 
 class OldServerVersion(Exception):
     pass
 
+
 def main():
-    """Run any commands via CLI interface"""
+    """
+    Run any commands via CLI interface
+    """
     try:
         server = sys.argv[1]
         if ':' in server:
             server, port = server.split(':')
         else:
-            port = 4212
+            port = DEFAULT_PORT
 
         command_name = sys.argv[2]
     except IndexError:
-        print "usage: vlcclient.py server[:port] command [argument]"
+        print("usage: vlcclient.py server[:port] command [argument]")
         sys.exit(1)
 
     vlc = VLCClient(server, int(port))
     vlc.connect()
-    print "Connected to VLC {0}".format(vlc.server_version)
+    print("Connected to VLC {0}".format(vlc.server_version))
 
     try:
         command = getattr(vlc, command_name)
-        attr = sys.argv[2] if len(sys.argv) > 2 else None
-        try:
-            print command(attr)
-        except TypeError:
-            print command()
+        cli_args = sys.argv[3:]
+        cmd_args = inspect.getargspec(command).args[1:]
+
+        if len(cli_args) != len(cmd_args):
+            print("Error: {} requires {} arguments, but only got {}".format(
+                command_name, len(cmd_args), len(cli_args),
+            ))
+            exit(1)
+
+        result = command(*cli_args)
+        print(result)
+
     except OldServerVersion as e:
-        print "Error:", e
+        print("Error:", e)
 
 if __name__ == '__main__':
     main()
