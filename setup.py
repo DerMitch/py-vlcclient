@@ -1,14 +1,15 @@
-import os
-
 from setuptools import setup, find_packages
+
+
+with open("README.rst") as f:
+    readme = f.read()
 
 
 setup(
     name='vlcclient',
     version='0.1.0',
     description="Control VLC instances using python.",
-    long_description=open(os.path.join(os.path.dirname(__file__),
-                                       'README.rst')).read(),
+    long_description=readme,
     license='BSD',
     url="https://github.com/DerMitch/py-vlcclient",
     author='Michael Mayr',
