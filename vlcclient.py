@@ -114,6 +114,12 @@ class VLCClient(object):
         """information about the current stream"""
         return self._send_command("info")
 
+    def raw(self, *args):
+        """
+        Send a raw telnet command
+        """
+        return self._send_command(" ".join(args))
+
     #
     # Playlist
     #
@@ -213,10 +219,11 @@ def main():
 
     try:
         command = getattr(vlc, command_name)
+        argspec = inspect.getargspec(command)
         cli_args = sys.argv[3:]
-        cmd_args = inspect.getargspec(command).args[1:]
+        cmd_args = argspec.args[1:]
 
-        if len(cli_args) != len(cmd_args):
+        if not argspec.varargs and len(cli_args) != len(cmd_args):
             print("Error: {} requires {} arguments, but only got {}".format(
                 command_name, len(cmd_args), len(cli_args),
             ))
