@@ -11,7 +11,8 @@
     $ vlc --intf telnet --telnet-password admin
 
     To start VLC with allowed remote admin:
-    $ vlc --intf telnet --telnet-password admin --lua-config "telnet={host='0.0.0.0:4212'}"
+    $ vlc --intf telnet --telnet-password admin \
+      --lua-config "telnet={host='0.0.0.0:4212'}"
 
     Replace --intf with --extraintf to start telnet and the regular GUI
 
@@ -45,6 +46,7 @@ class VLCClient(object):
 
         self.telnet = None
         self.server_version = None
+        self.server_version_tuple = ()
 
     def connect(self):
         """
@@ -57,7 +59,7 @@ class VLCClient(object):
 
         # Parse version
         result = self.telnet.expect([
-            "VLC media player ([\d.]+)",
+            r"VLC media player ([\d.]+)",
         ])
         self.server_version = result[1].group(1)
         self.server_version_tuple = self.server_version.split('.')
@@ -91,11 +93,16 @@ class VLCClient(object):
         return self.telnet.read_until(">")[1:-3]
 
     def _require_version(self, command, version):
+        """
+        Check if the server runs at least at a specific version
+        or raise an error.
+        """
         if isinstance(version, basestring):
             version = version.split('.')
         if version > self.server_version_tuple:
-            raise OldServerVersion("Command '{0} requires at least VLC {1}".format(
-                command, ".".join(version)
+            raise OldServerVersion(
+                "Command '{0} requires at least VLC {1}".format(
+                    command, ".".join(version)
             ))
 
     #
@@ -190,10 +197,12 @@ class VLCClient(object):
 
 
 class WrongPasswordError(Exception):
+    """Invalid password sent to the server."""
     pass
 
 
 class OldServerVersion(Exception):
+    """VLC version is too old for the requested commmand."""
     pass
 
 
@@ -216,7 +225,8 @@ def main():
 
     vlc = VLCClient(server, int(port))
     vlc.connect()
-    print("Connected to VLC {0}\n".format(vlc.server_version), file=sys.stderr)
+    print("Connected to VLC {0}\n".format(vlc.server_version),
+          file=sys.stderr)
 
     try:
         command = getattr(vlc, command_name)
@@ -233,8 +243,8 @@ def main():
         result = command(*cli_args)
         print(result)
 
-    except OldServerVersion as e:
-        print("Error: {0}\n".format(e), file=sys.stderr)
+    except OldServerVersion as exc:
+        print("Error: {0}\n".format(exc), file=sys.stderr)
 
 if __name__ == '__main__':
     main()
