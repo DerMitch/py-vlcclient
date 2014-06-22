@@ -210,12 +210,13 @@ def main():
 
         command_name = sys.argv[2]
     except IndexError:
-        print("usage: vlcclient.py server[:port] command [argument]")
+        print("usage: vlcclient.py server[:port] command [argument]",
+              file=sys.stderr)
         sys.exit(1)
 
     vlc = VLCClient(server, int(port))
     vlc.connect()
-    print("Connected to VLC {0}".format(vlc.server_version))
+    print("Connected to VLC {0}\n".format(vlc.server_version), file=sys.stderr)
 
     try:
         command = getattr(vlc, command_name)
@@ -226,14 +227,14 @@ def main():
         if not argspec.varargs and len(cli_args) != len(cmd_args):
             print("Error: {} requires {} arguments, but only got {}".format(
                 command_name, len(cmd_args), len(cli_args),
-            ))
+            ), file=sys.stderr)
             exit(1)
 
         result = command(*cli_args)
         print(result)
 
     except OldServerVersion as e:
-        print("Error:", e)
+        print("Error: {0}\n".format(e), file=sys.stderr)
 
 if __name__ == '__main__':
     main()
