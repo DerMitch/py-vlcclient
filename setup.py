@@ -17,6 +17,6 @@ setup(
     py_modules=['vlcclient'],
     classifiers=[
         'Development Status :: 4 - Beta',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: MIT License',
     ],
 )
