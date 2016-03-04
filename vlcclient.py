@@ -121,6 +121,11 @@ class VLCClient(object):
         """information about the current stream"""
         return self._send_command("info")
 
+    def set_fullscreen(self, value):
+        """set fullscreen on or off"""
+        assert type(value) is bool
+        return self._send_command("fullscreen {}".format("on" if value else "off"))
+
     def raw(self, *args):
         """
         Send a raw telnet command
