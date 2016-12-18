@@ -59,22 +59,22 @@ class VLCClient(object):
 
         # Parse version
         result = self.telnet.expect([
-            r"VLC media player ([\d.]+)",
+            r"VLC media player ([\d.]+)".encode("utf-8"),
         ])
         self.server_version = result[1].group(1)
-        self.server_version_tuple = self.server_version.split('.')
+        self.server_version_tuple = self.server_version.decode("utf-8").split('.')
 
         # Login
-        self.telnet.read_until("Password: ")
-        self.telnet.write(self.password)
-        self.telnet.write("\n")
+        self.telnet.read_until("Password: ".encode("utf-8"))
+        self.telnet.write(self.password.encode("utf-8"))
+        self.telnet.write("\n".encode("utf-8"))
 
         # Password correct?
         result = self.telnet.expect([
-            "Password: ",
-            ">"
+            "Password: ".encode("utf-8"),
+            ">".encode("utf-8")
         ])
-        if "Password" in result[2]:
+        if "Password".encode("utf-8") in result[2]:
             raise WrongPasswordError()
 
     def disconnect(self):
@@ -89,8 +89,8 @@ class VLCClient(object):
         Sends a command to VLC and returns the text reply.
         This command may block.
         """
-        self.telnet.write(line + "\n")
-        return self.telnet.read_until(">")[1:-3]
+        self.telnet.write((line + "\n").encode("utf-8"))
+        return self.telnet.read_until(">".encode("utf-8"))[1:-3]
 
     def _require_version(self, command, version):
         """
