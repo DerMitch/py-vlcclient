@@ -1,5 +1,4 @@
-py-vlcclient
-============
+# py-vlcclient
 
 This module allows to control a VLC instance using Python. This
 module uses the telnet interface of VLC and has no external dependencies.
@@ -9,8 +8,7 @@ http://wiki.videolan.org/Documentation:Streaming_HowTo/VLM
 
 The clients supports some basic commands to modify playlists and control the playback.
 
-How to Use
-==========
+## How to Use
 
 First start VLC and enable the telnet interface. You can either enable
 it when starting VLC::
@@ -30,33 +28,33 @@ Add Interface -> Telnet).
 
 Example usage::
 
-  >>> from vlcclient import VLCClient
-  >>> vlc = VLCClient("::1")
-  >>> vlc.connect()
-  >>>
-  >>> r.add("/home/mitch/Music/a_song.ogg")
-  >>> r.volume(300)
-  >>> r.rewind()
-  >>> r.status()
-  '( new input: file:///.... )
-   ( audio volume: 200 )
-   ( state playing )'
+```
+>>> from vlcclient import VLCClient
+>>> vlc = VLCClient("::1")
+>>> vlc.connect()
+>>>
+>>> r.add("/home/mitch/Music/a_song.ogg")
+>>> r.volume(300)
+>>> r.rewind()
+>>> r.status()
+'( new input: file:///.... )
+ ( audio volume: 200 )
+ ( state playing )'
+```
 
 
-Implemented Commands
-====================
+## Implemented Commands
 
 The following commands are currently implemented:
 
-generic
--------
+### generic
+
 
  * help
  * status
  * info
 
-playlists and controls
-----------------------
+### playlists and controls
 
  * add
  * enqueue
@@ -69,8 +67,7 @@ playlists and controls
  * prev
  * clear
 
-volume
-------
+### volume
 
  * volume (get/set)
  * volup
