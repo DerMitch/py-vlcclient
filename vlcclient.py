@@ -182,6 +182,18 @@ class VLCClient(object):
         """Clear all items in playlist"""
         return self._send_command("clear")
 
+    def loop(self):
+        """Toggle loop"""
+        return self._send_command("loop")
+
+    def repeat(self):
+        """Toggle repeat of a single item"""
+        return self._send_command("repeat")
+
+    def random(self):
+        """Toggle random playback"""
+        return self._send_command("random")
+
     #
     # Volume
     #
