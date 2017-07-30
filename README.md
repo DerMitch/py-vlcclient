@@ -66,6 +66,9 @@ The following commands are currently implemented:
  * next
  * prev
  * clear
+ * loop
+ * repeat
+ * random
 
 ### volume
 
